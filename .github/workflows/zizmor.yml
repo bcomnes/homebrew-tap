@@ -1,0 +1,29 @@
+name: zizmor
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  zizmor:
+    name: scan GitHub Actions
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out tap
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      # Pin the action and scanner separately so neither can silently change underneath CI.
+      - name: Scan workflows
+        uses: zizmorcore/zizmor-action@6599ee8b7a49aef6a770f63d261d214911a7ce02 # v0.6.0
+        with:
+          advanced-security: false
+          annotations: true
+          version: 1.28.0

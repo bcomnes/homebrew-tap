@@ -5,15 +5,16 @@ on:
     - cron: "23 9 * * *"
   workflow_dispatch:
 
-permissions:
-  actions: write
-  contents: write
-  pull-requests: write
+permissions: {}
 
 jobs:
   update:
     name: update ${{ matrix.formula }}
     runs-on: macos-latest
+    permissions:
+      actions: write # Dispatch the test-bot workflow for generated pull requests.
+      contents: write # Push the generated formula branch.
+      pull-requests: write # Create or refresh the formula update pull request.
     strategy:
       fail-fast: false
       matrix:
@@ -25,6 +26,8 @@ jobs:
       - name: Check out tap
         uses: actions/checkout@v7
         with:
+          # This credential is required to push the generated formula branch.
+          persist-credentials: true
           fetch-depth: 0
 
       - name: Set up Homebrew
