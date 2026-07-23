@@ -20,10 +20,20 @@ jobs:
         with:
           persist-credentials: false
 
-      # Pin the action and scanner separately so neither can silently change underneath CI.
+      - name: Install Zizmor 1.28.0
+        env:
+          ARCHIVE: zizmor-x86_64-unknown-linux-gnu.tar.gz
+          SHA256: e87b67160194884e375a46a12c57ccc904f762b53845f254fab7f17d98809c09
+          VERSION: 1.28.0
+        run: |
+          curl --fail --location --silent --show-error \
+            "https://github.com/zizmorcore/zizmor/releases/download/v${VERSION}/${ARCHIVE}" \
+            --output "${ARCHIVE}"
+          printf "%s  %s\n" "${SHA256}" "${ARCHIVE}" | sha256sum --check --strict
+          tar --extract --gzip --file "${ARCHIVE}" --directory "${RUNNER_TEMP}"
+          "${RUNNER_TEMP}/zizmor" --version
+
       - name: Scan workflows
-        uses: zizmorcore/zizmor-action@6599ee8b7a49aef6a770f63d261d214911a7ce02 # v0.6.0
-        with:
-          advanced-security: false
-          annotations: true
-          version: 1.28.0
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: "${RUNNER_TEMP}/zizmor --strict-collection --persona=regular --format=github ."
