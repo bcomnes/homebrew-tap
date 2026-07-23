@@ -1,4 +1,4 @@
-name: zizmor
+name: GitHub Actions Security Analysis with zizmor 🌈
 
 on:
   push:
@@ -7,33 +7,21 @@ on:
   pull_request:
   workflow_dispatch:
 
-permissions:
-  contents: read
+permissions: {}
 
 jobs:
   zizmor:
-    name: scan GitHub Actions
+    name: Run zizmor 🌈
     runs-on: ubuntu-latest
+    permissions:
+      security-events: write # Upload SARIF results to GitHub Code Scanning.
+      contents: read # Check out the repository.
+      actions: read # Allow upload-sarif to read workflow-run information.
     steps:
-      - name: Check out tap
+      - name: Checkout repository
         uses: actions/checkout@v7
         with:
           persist-credentials: false
 
-      - name: Install Zizmor 1.28.0
-        env:
-          ARCHIVE: zizmor-x86_64-unknown-linux-gnu.tar.gz
-          SHA256: e87b67160194884e375a46a12c57ccc904f762b53845f254fab7f17d98809c09
-          VERSION: 1.28.0
-        run: |
-          curl --fail --location --silent --show-error \
-            "https://github.com/zizmorcore/zizmor/releases/download/v${VERSION}/${ARCHIVE}" \
-            --output "${ARCHIVE}"
-          printf "%s  %s\n" "${SHA256}" "${ARCHIVE}" | sha256sum --check --strict
-          tar --extract --gzip --file "${ARCHIVE}" --directory "${RUNNER_TEMP}"
-          "${RUNNER_TEMP}/zizmor" --version
-
-      - name: Scan workflows
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: "${RUNNER_TEMP}/zizmor --strict-collection --persona=regular --format=github ."
+      - name: Run zizmor 🌈
+        uses: zizmorcore/zizmor-action@192e21d79ab29983730a13d1382995c2307fbcaa # v0.5.7
