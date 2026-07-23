@@ -43,4 +43,4 @@ jobs:
 
       # Audit, build, install, and test changed formulae; bottles are created locally but not published.
       - run: brew test-bot --only-formulae
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
