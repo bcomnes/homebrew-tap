@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        formula: [goproject, goversion]
+        formula: [goproject, gostgrator, goversion]
     concurrency:
       group: update-formula-${{ matrix.formula }}
       cancel-in-progress: true
