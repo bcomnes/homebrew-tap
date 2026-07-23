@@ -1,0 +1,46 @@
+name: brew test-bot
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-bot:
+    runs-on: macos-latest
+    permissions:
+      actions: read
+      checks: read
+      contents: read
+      pull-requests: read
+    steps:
+      - name: Set up Homebrew
+        id: set-up-homebrew
+        uses: Homebrew/actions/setup-homebrew@18fcb8e3e06b4247c676c506750dc95ea7226479 # 2026.07.13.1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Cache Homebrew Bundler RubyGems
+        uses: actions/cache@v6
+        with:
+          path: ${{ steps.set-up-homebrew.outputs.gems-path }}
+          key: ${{ runner.os }}-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}
+          restore-keys: ${{ runner.os }}-rubygems-
+
+      # Remove Homebrew state left by earlier CI work before testing this change.
+      - run: brew test-bot --only-cleanup-before
+
+      # Verify that Homebrew and the runner are correctly configured for test-bot.
+      - run: brew test-bot --only-setup
+
+      # Check the tap's formula and workflow syntax before building anything.
+      - run: brew test-bot --only-tap-syntax
+
+      # Audit, build, install, and test changed formulae; bottles are created locally but not published.
+      - run: brew test-bot --only-formulae
+        if: github.event_name == 'pull_request'
