@@ -64,7 +64,7 @@ For each upstream release:
 2. Update the formula's `url` to the new tag archive.
 3. Replace the formula's `sha256` with the checksum of that archive.
 4. Open a pull request in this repository.
-5. Wait for `brew test-bot` to pass on macOS and Linux.
+5. Wait for `brew test-bot` to pass on the latest macOS runner.
 6. Merge the formula update.
 
 A GitHub Release page is optional; the Git tag and tag archive are sufficient.
