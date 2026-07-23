@@ -1,0 +1,126 @@
+name: update formulae
+
+on:
+  schedule:
+    - cron: "23 9 * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  update:
+    name: update ${{ matrix.formula }}
+    runs-on: macos-latest
+    permissions:
+      actions: write # Dispatch the test-bot workflow for generated pull requests.
+      contents: write # Push the generated formula branch.
+      pull-requests: write # Create or refresh the formula update pull request.
+    strategy:
+      fail-fast: false
+      matrix:
+        formula: [goproject, goversion]
+    concurrency:
+      group: update-formula-${{ matrix.formula }}
+      cancel-in-progress: true
+    steps:
+      - name: Check out tap
+        uses: actions/checkout@v7
+        with:
+          # This credential is required to push the generated formula branch.
+          persist-credentials: true
+          fetch-depth: 0
+
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@df4b09108a1de9d6f995fe68f302b3f68bd6d2ef # 2026.07.20.1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Find latest release
+        id: release
+        env:
+          FORMULA: ${{ matrix.formula }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG=$(gh api "repos/bcomnes/${FORMULA}/releases/latest" --jq .tag_name)
+          echo "tag=${TAG}" >> "${GITHUB_OUTPUT}"
+          echo "version=${TAG#v}" >> "${GITHUB_OUTPUT}"
+
+      - name: Check whether an update is needed
+        id: check
+        env:
+          FORMULA: ${{ matrix.formula }}
+          TAG: ${{ steps.release.outputs.tag }}
+          VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          BRANCH="automation/update-${FORMULA}"
+          CURRENT=$(brew info --json=v2 "bcomnes/tap/${FORMULA}" | jq -r '.formulae[0].versions.stable')
+
+          echo "branch=${BRANCH}" >> "${GITHUB_OUTPUT}"
+          if [[ "${CURRENT}" == "${VERSION}" ]]
+          then
+            echo "update=false" >> "${GITHUB_OUTPUT}"
+            echo "${FORMULA} is already at ${VERSION}."
+            exit 0
+          fi
+
+          if git ls-remote --exit-code --heads origin "${BRANCH}" >/dev/null 2>&1
+          then
+            git fetch origin "${BRANCH}:refs/remotes/origin/${BRANCH}"
+            if git show "origin/${BRANCH}:Formula/${FORMULA}.rb" | grep -Fq "${TAG}"
+            then
+              echo "update=false" >> "${GITHUB_OUTPUT}"
+              echo "The existing ${FORMULA} update branch already targets ${TAG}."
+              exit 0
+            fi
+          fi
+
+          echo "update=true" >> "${GITHUB_OUTPUT}"
+
+      - name: Update formula
+        if: steps.check.outputs.update == 'true'
+        env:
+          BRANCH: ${{ steps.check.outputs.branch }}
+          FORMULA: ${{ matrix.formula }}
+          HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          git switch -C "${BRANCH}" origin/master
+          brew bump-formula-pr \
+            --version="${VERSION}" \
+            --write-only \
+            "bcomnes/tap/${FORMULA}"
+
+      - name: Push update branch
+        if: steps.check.outputs.update == 'true'
+        env:
+          BRANCH: ${{ steps.check.outputs.branch }}
+          FORMULA: ${{ matrix.formula }}
+          VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "Formula/${FORMULA}.rb"
+          git commit -m "${FORMULA} ${VERSION}"
+          git push --force-with-lease --set-upstream origin "${BRANCH}"
+
+      - name: Create or refresh pull request
+        if: steps.check.outputs.update == 'true'
+        env:
+          BRANCH: ${{ steps.check.outputs.branch }}
+          FORMULA: ${{ matrix.formula }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ steps.release.outputs.tag }}
+          VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          PR=$(gh pr list --head "${BRANCH}" --state open --json number --jq '.[0].number // empty')
+          TITLE="${FORMULA} ${VERSION}"
+          BODY="Automated formula update for upstream release ${TAG}. This pull request is refreshed when a newer release is published."
+
+          if [[ -n "${PR}" ]]
+          then
+            gh pr edit "${PR}" --title "${TITLE}" --body "${BODY}"
+          else
+            gh pr create --base master --head "${BRANCH}" --title "${TITLE}" --body "${BODY}"
+          fi
+
+          gh workflow run tests.yml --ref "${BRANCH}"

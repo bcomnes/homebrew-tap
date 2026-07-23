@@ -58,36 +58,23 @@ The release version is injected into the binary with Go linker flags.
 
 ## Maintaining the tap
 
-For each upstream release:
+The `update formulae` workflow polls the latest published GitHub Releases for `goproject` and `goversion` every day.
+It can also be run manually from the Actions tab with `workflow_dispatch`.
 
-1. Create and push an immutable semantic-version tag in the source repository.
-2. Update the formula's `url` to the new tag archive.
-3. Replace the formula's `sha256` with the checksum of that archive.
-4. Open a pull request in this repository.
-5. Wait for `brew test-bot` to pass on the latest macOS runner.
-6. Merge the formula update.
+When a newer release exists, the workflow uses `brew bump-formula-pr` to update the formula URL and SHA-256, then opens a pull request.
+Each formula uses one deterministic automation branch, so a newer release refreshes the existing open pull request instead of creating stale version-specific pull requests.
+The workflow explicitly dispatches `brew test-bot` for the updated branch because pull requests created with `GITHUB_TOKEN` do not trigger normal pull request workflows.
 
-A GitHub Release page is optional; the Git tag and tag archive are sufficient.
+The repository must allow GitHub Actions to create pull requests under **Settings → Actions → General → Workflow permissions**.
+No personal access token is required.
 
-Example archive checksum command:
-
-```console
-curl --fail --location --output release.tar.gz \
-  https://github.com/bcomnes/goversion/archive/refs/tags/v2.1.2.tar.gz
-shasum -a 256 release.tar.gz
-```
-
-Validate a formula locally with:
+To update manually instead, change the formula's release URL and SHA-256, then validate it with:
 
 ```console
 brew audit --strict --online bcomnes/tap/goproject
 brew install --build-from-source bcomnes/tap/goproject
 brew test bcomnes/tap/goproject
 ```
-
-The initial release process is intentionally manual.
-
-Formula-update automation can be added after the manual release and upgrade flow has been validated.
 
 ## Documentation
 
