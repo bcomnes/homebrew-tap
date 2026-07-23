@@ -12,6 +12,7 @@ Install a formula directly:
 
 ```console
 brew install bcomnes/tap/goproject
+brew install bcomnes/tap/gostgrator
 brew install bcomnes/tap/goversion
 ```
 
@@ -21,7 +22,7 @@ Alternatively, add the tap first:
 
 ```console
 brew tap bcomnes/tap
-brew install goproject goversion
+brew install goproject gostgrator goversion
 ```
 
 In a `Brewfile`:
@@ -29,6 +30,7 @@ In a `Brewfile`:
 ```ruby
 tap "bcomnes/tap"
 brew "goproject"
+brew "gostgrator"
 brew "goversion"
 ```
 
@@ -37,6 +39,7 @@ brew "goversion"
 | Formula | Description | Source |
 | --- | --- | --- |
 | `goproject` | Create projects from tar-based templates | [`bcomnes/goproject`](https://github.com/bcomnes/goproject) |
+| `gostgrator` | Run PostgreSQL and SQLite database migrations | [`bcomnes/gostgrator`](https://github.com/bcomnes/gostgrator) |
 | `goversion` | Manage semantic version bumps in Go projects | [`bcomnes/goversion`](https://github.com/bcomnes/goversion) |
 
 ## Update
@@ -45,7 +48,7 @@ Homebrew updates this tap through its normal update process:
 
 ```console
 brew update
-brew upgrade goproject goversion
+brew upgrade goproject gostgrator goversion
 ```
 
 ## How formulae are built
@@ -58,7 +61,7 @@ The release version is injected into the binary with Go linker flags.
 
 ## Maintaining the tap
 
-The `update formulae` workflow polls the latest published GitHub Releases for `goproject` and `goversion` every day.
+The `update formulae` workflow polls the latest published GitHub Releases for `goproject`, `gostgrator`, and `goversion` every day.
 It can also be run manually from the Actions tab with `workflow_dispatch`.
 
 When a newer release exists, the workflow uses `brew bump-formula-pr` to update the formula URL and SHA-256, then opens a pull request.
