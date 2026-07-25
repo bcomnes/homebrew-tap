@@ -11,7 +11,7 @@ No precompiled release binaries, casks, vendored modules, or published bottles a
 Install a formula directly:
 
 ```console
-brew install bcomnes/tap/goproject
+brew install bcomnes/tap/gogogo
 brew install bcomnes/tap/gostgrator
 brew install bcomnes/tap/goversion
 ```
@@ -22,14 +22,14 @@ Alternatively, add the tap first:
 
 ```console
 brew tap bcomnes/tap
-brew install goproject gostgrator goversion
+brew install gogogo gostgrator goversion
 ```
 
 In a `Brewfile`:
 
 ```ruby
 tap "bcomnes/tap"
-brew "goproject"
+brew "gogogo"
 brew "gostgrator"
 brew "goversion"
 ```
@@ -38,7 +38,7 @@ brew "goversion"
 
 | Formula | Description | Source |
 | --- | --- | --- |
-| `goproject` | Create projects from tar-based templates | [`bcomnes/goproject`](https://github.com/bcomnes/goproject) |
+| `gogogo` | Create projects from tar-based templates | [`bcomnes/gogogo`](https://github.com/bcomnes/gogogo) |
 | `gostgrator` | Run PostgreSQL and SQLite database migrations | [`bcomnes/gostgrator`](https://github.com/bcomnes/gostgrator) |
 | `goversion` | Manage semantic version bumps in Go projects | [`bcomnes/goversion`](https://github.com/bcomnes/goversion) |
 
@@ -48,7 +48,7 @@ Homebrew updates this tap through its normal update process:
 
 ```console
 brew update
-brew upgrade goproject gostgrator goversion
+brew upgrade gogogo gostgrator goversion
 ```
 
 ## How formulae are built
@@ -61,7 +61,7 @@ The release version is injected into the binary with Go linker flags.
 
 ## Maintaining the tap
 
-The `update formulae` workflow polls the latest published GitHub Releases for `goproject`, `gostgrator`, and `goversion` every day.
+The `update formulae` workflow polls the latest published GitHub Releases for `gogogo`, `gostgrator`, and `goversion` every day.
 It can also be run manually from the Actions tab with `workflow_dispatch`.
 
 When a newer release exists, the workflow uses `brew bump-formula-pr` to update the formula URL and SHA-256, then opens a pull request.
@@ -74,9 +74,9 @@ No personal access token is required.
 To update manually instead, change the formula's release URL and SHA-256, then validate it with:
 
 ```console
-brew audit --strict --online bcomnes/tap/goproject
-brew install --build-from-source bcomnes/tap/goproject
-brew test bcomnes/tap/goproject
+brew audit --strict --online bcomnes/tap/gogogo
+brew install --build-from-source bcomnes/tap/gogogo
+brew test bcomnes/tap/gogogo
 ```
 
 ## Documentation
