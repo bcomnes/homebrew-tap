@@ -10,9 +10,11 @@ class Gogogo < Formula
 
   def install
     system "go", "build", *std_go_args(ldflags: "-s -w -X main.Version=#{version}")
+    bin.install_symlink bin/"gogogo" => "ggg"
   end
 
   test do
     assert_match version.to_s, shell_output("#{bin}/gogogo -version")
+    assert_match version.to_s, shell_output("#{bin}/ggg -version")
   end
 end
