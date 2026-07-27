@@ -16,6 +16,7 @@ brew install bcomnes/tap/gostgrator
 brew install bcomnes/tap/goversion
 ```
 
+The `gogogo` formula installs both the `gogogo` and shorter `ggg` commands.
 This automatically adds the tap.
 
 Alternatively, add the tap first:
