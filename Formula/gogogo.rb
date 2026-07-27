@@ -1,8 +1,8 @@
 class Gogogo < Formula
   desc "Create projects from tar-based templates"
   homepage "https://github.com/bcomnes/gogogo"
-  url "https://github.com/bcomnes/gogogo/archive/refs/tags/v0.1.0.tar.gz?download=1"
-  sha256 "ffa28860e753a798f2fa62bf23fec85f2b0505586be857882c72c12a5c80f6c1"
+  url "https://github.com/bcomnes/gogogo/archive/refs/tags/v0.1.1.tar.gz?download=1"
+  sha256 "31e946ed72fbee652ad01159984e37cd8d4c56b25ce3e177933e99c43bbf85ef"
   license "MIT"
   head "https://github.com/bcomnes/gogogo.git", branch: "master"
 
