@@ -1,8 +1,8 @@
 class Goversion < Formula
   desc "Manage semantic version bumps in Go projects"
   homepage "https://github.com/bcomnes/goversion"
-  url "https://github.com/bcomnes/goversion/archive/refs/tags/v2.4.2.tar.gz"
-  sha256 "dad3c23e56eab14327af41336fe1c3a119845873d9f67d447a3a0e4e5cf8ebd9"
+  url "https://github.com/bcomnes/goversion/archive/refs/tags/v2.5.1.tar.gz"
+  sha256 "2c66745caead0923cabf59c742396b14caf9c5568ea53843865c7a9926a72b47"
   license "MIT"
   head "https://github.com/bcomnes/goversion.git", branch: "master"
 
