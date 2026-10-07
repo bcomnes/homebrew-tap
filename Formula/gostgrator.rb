@@ -9,8 +9,7 @@ class Gostgrator < Formula
   depends_on "go" => :build
 
   def install
-    module_path = Utils.safe_popen_read("go", "list", "-m").strip
-    ldflags = "-s -w -X #{module_path}.Version=#{version}"
+    ldflags = "-s -w"
     system "go", "build", *std_go_args(output: bin/"gostgrator-pg", ldflags:), "./pg"
     system "go", "build", *std_go_args(output: bin/"gostgrator-sqlite", ldflags:), "./sqlite"
   end
