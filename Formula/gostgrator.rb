@@ -1,8 +1,8 @@
 class Gostgrator < Formula
   desc "Run PostgreSQL and SQLite database migrations"
   homepage "https://github.com/bcomnes/gostgrator"
-  url "https://github.com/bcomnes/gostgrator/archive/refs/tags/v2.0.1.tar.gz?download=1"
-  sha256 "c87ad57b4a6b8e1d137e8ebee920324f8e5b1737e67ee9631660dcef134dd4bb"
+  url "https://github.com/bcomnes/gostgrator/archive/refs/tags/v2.0.2.tar.gz?download=1"
+  sha256 "b38ba82edacf95a88eeb3e6605aebcaafe1077d3fcd5aeafa282e18494382734"
   license "MIT"
   head "https://github.com/bcomnes/gostgrator.git", branch: "master"
 
